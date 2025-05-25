@@ -162,10 +162,6 @@ function ShaderProgram(name, program) {
   }
 }
 
-/* Draws a colored cube, along with a set of coordinate axes.
- * (Note that the use of the above drawPrimitive function is not an efficient
- * way to draw with WebGL.  Here, the geometry is so simple that it doesn't matter.)
- */
 function draw() {
   gl.clearColor(0, 0, 0, 1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -259,7 +255,6 @@ function CreateSurfaceData() {
       const u0 = u;
       const v0 = v;
       const u1 = u + step;
-      // const v1 = v + step;
 
       let x0 = X(u0, v0);
       let y0 = Y(u0, v0);
@@ -330,7 +325,7 @@ function initGL() {
   surface = new Model('Surface');
   surface.BufferData(CreateSurfaceData());
 
-  stereoCam = new StereoCamera(// "If something doesn't work - try to change numbers a bit"
+  stereoCam = new StereoCamera(
     2000,
     35.0,
     1.3,
@@ -339,22 +334,17 @@ function initGL() {
     20000
   );
 
-  // references - lection and https://developer.mozilla.org/ru/docs/Web/API/MediaDevices/getUserMedia
-  // Set to global video variable (or define and initialize variable globally(not good for consistency)).
   video = document.createElement('video');
   var constraints = { video: true };
   navigator.mediaDevices.getUserMedia(constraints).then(stream => {
     video.srcObject = stream;
-    video.onloadedmetadata = function (e) { // video.autoplay is shaggy, this approach is better(?)
+    video.onloadedmetadata = function (e) { 
       video.play();
     };
   }).catch(function (err) { console.log(err.name + ": " + err.message); });
-  // always check for errors at the end.
 
   gl.enable(gl.DEPTH_TEST);
 
-  // There is another way of doing this, but I failed when tried to implement.
-  // reference - https://webglfundamentals.org/webgl/lessons/webgl-2d-drawimage.html
   background = new Model();
   background.BufferData({
     vertexList: [0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0],
@@ -369,14 +359,6 @@ function initGL() {
   gl.enable(gl.DEPTH_TEST);
 }
 
-/* Creates a program for use in the WebGL context gl, and returns the
- * identifier for that program.  If an error occurs while compiling or
- * linking the program, an exception of type Error is thrown.  The error
- * string contains the compilation or linking error.  If no error occurs,
- * the program identifier is the return value of the function.
- * The second and third parameters are strings that contain the
- * source code for the vertex shader and for the fragment shader.
- */
 function createProgram(gl, vShader, fShader) {
   let vsh = gl.createShader(gl.VERTEX_SHADER);
   gl.shaderSource(vsh, vShader);
@@ -400,9 +382,6 @@ function createProgram(gl, vShader, fShader) {
   return prog;
 }
 
-/**
- * initialization function that will be called when the page has loaded
- */
 function init() {
   let canvas;
   try {
@@ -418,7 +397,7 @@ function init() {
     return;
   }
   try {
-    initGL();  // initialize the WebGL graphics context
+    initGL(); 
   }
   catch (e) {
     document.getElementById("canvas-holder").innerHTML =
@@ -462,38 +441,27 @@ window.addEventListener("keydown", (event) => {
 });
 
 function LoadTexture() {
-  // Use global object "texture object"
   texture_object = gl.createTexture();
   let image = new Image();
   image.src = 'wall.jpg';
   image.crossOrigin = 'anonymous';
 
   image.onload = () => {
-    // Make the "texture object" be the active texture object. Only the
-    // active object can be modified or used. This also declares that the
-    // texture object will hold a texture of type gl.TEXTURE_2D. The type
-    // of the texture, gl.TEXTURE_2D, can't be changed after this initialization.
     gl.bindTexture(gl.TEXTURE_2D, texture_object);
-
-    // Set parameters of the texture object. 
+ 
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 
-    // Tell gl to flip the orientation of the image on the Y axis. Most
-    // images have their origin in the upper-left corner. WebGL expects
-    // the origin of an image to be in the lower-left corner.
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
 
-    // Store in the image in the GPU's texture object
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
     draw();
   };
 }
 
-// Create texture and assign to a global texture variable
 function CreateWebCamTexture() {
   textureWebCam = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, textureWebCam);
