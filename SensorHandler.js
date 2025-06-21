@@ -58,8 +58,8 @@ function processOrientationData(values) {
     const roll = values[2];    
 
     const z = azimuth * Math.PI / 180;
-    const x = pitch   * Math.PI / 180;
-    const y = roll    * Math.PI / 180;
+    const x = pitch * Math.PI / 180;
+    const y = roll * Math.PI / 180;
 
     const Rz = m4.zRotation(z);
     const Rx = m4.xRotation(x);
