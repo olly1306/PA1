@@ -115,7 +115,7 @@ function loadSurface() {
             });
 
             object.position.y = 2;
-            object.scale.set(0.1, 0.1, 0.1);
+            object.scale.set(0.3, 0.3, 0.3);
             arWorldRoot.add(object);
 
             URL.revokeObjectURL(objURL);
